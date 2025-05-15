@@ -13,3 +13,13 @@ AMQP (Advanced Message Queuing Protocol) adalah sebuah protokol komunikasi yang 
 Pada bagian `amqp://guest:guest@localhost:5672`, ini adalah format URL koneksi yang digunakan untuk menghubungkan aplikasi ke server AMQP seperti RabbitMQ. Kata `guest` yang pertama adalah username, dan `guest` yang kedua adalah password yang digunakan untuk otentikasi ke server RabbitMQ. Secara default, RabbitMQ memang menyediakan akun `guest` dengan password `guest` untuk keperluan pengujian atau pengembangan. Selanjutnya, `localhost` menunjukkan bahwa server RabbitMQ berjalan di komputer lokal (komputer yang sama dengan aplikasi), dan `5672` adalah nomor port standar yang digunakan oleh protokol AMQP untuk menerima koneksi. Jadi, keseluruhan URL tersebut berarti bahwa aplikasi akan mencoba terhubung ke server RabbitMQ lokal menggunakan akun default melalui port standar AMQP.
 
 ---
+
+### Simulation slow subscriber
+
+![image](https://github.com/user-attachments/assets/2e500f6c-79e2-41fb-bd84-f98bd14c05b3)
+
+Pada simulasi ini, saya mengubah subscriber menjadi lebih lambat dengan menambahkan delay 1 detik setiap kali memproses pesan. Setelah melakukan perubahan ini, saya menjalankan perintah cargo run pada program publisher sebanyak 8 kali dengan cepat. Setiap kali publisher dijalankan, pesan-pesan baru dikirimkan ke message broker dan masuk ke queue RabbitMQ. Karena subscriber sekarang memiliki delay, pesan-pesan tersebut tidak dapat langsung diproses dan akan menumpuk di queue.
+
+Setelah menjalankan publisher sebanyak 8 kali, saya memeriksa grafik di RabbitMQ dan menemukan bahwa jumlah queue saya mencapai sekitar 25 pesan. Hal ini terjadi karena publisher terus mengirimkan pesan dengan cepat, sementara subscriber yang lambat hanya dapat memproses satu pesan setiap detiknya, sehingga antrean semakin panjang seiring waktu. Dalam situasi seperti ini, message broker (RabbitMQ) menyimpan pesan-pesan tersebut sementara menunggu subscriber untuk memprosesnya satu per satu.
+
+---
